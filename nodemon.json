@@ -1,0 +1,6 @@
+ {
+      "execMap": {
+        "ts": "node --env-file=.env -r ts-node/register"
+      },
+      "watch": [".env", "../healkita-backend"]
+    }
