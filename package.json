@@ -1,6 +1,6 @@
 {
   "name": "healkita-backend",
-  "version": "1.0.1.1",
+  "version": "1.0.1.2",
   "description": "",
   "homepage": "https://github.com/assaify256/healkita-backend#readme",
   "bugs": {
@@ -19,13 +19,18 @@
     "start": "nodemon app.ts"
   },
   "dependencies": {
+    "@types/connect-sqlite3": "^0.9.6",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.18.2",
     "@types/node": "^25.2.1",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.6.2",
     "body-parser": "^2.2.2",
+    "connect-session-sequelize": "^8.0.5",
+    "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "mysql2": "^3.16.3",
     "sequelize": "^6.37.7",
