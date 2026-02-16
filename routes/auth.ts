@@ -1,15 +1,24 @@
 import express, { Router } from "express";
-import { signInController, signUpController } from "../controllers/auth.ts";
-import { body } from "express-validator";
+import { getCurrentUserController, signInController, signUpController } from "../controllers/auth.ts";
 
-const router: Router = express.Router();
 
-export const signUpRouter = router.post(
+
+const authRouter: Router = express.Router();
+
+const signUp = authRouter.post(
     "/sign-up",
     signUpController,
 );
 
-export const signInRouter = router.post(
+const signIn = authRouter.post(
     "/sign-in",
     signInController,
 );
+
+const getUser = authRouter.get("/me", getCurrentUserController)
+
+export default authRouter
+
+
+
+

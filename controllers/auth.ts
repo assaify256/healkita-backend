@@ -1,8 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { User } from "../models/user.ts";
-import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
-import { where } from "sequelize";
 
 export const signUpController = (
     req: Request,
@@ -12,7 +10,6 @@ export const signUpController = (
     //define variables
     const email = req.body.email;
     const password = req.body.password;
-    const errors = validationResult(req);
     //check if any email has already existed
     User.findOne({ where: { email: email } })
         //check existing email, if it is new, next
@@ -33,28 +30,51 @@ export const signUpController = (
     //
 };
 
-export const signInController = (
+export const signInController = async (
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
-    // try to sign in
-    const email = req.body.email;
-    const password = req.body.password;
-    User.findOne({ where: { email: email } })
-        .then((user) => {
-            bcrypt.compare(password, user.password);
-        })
-        .then((user) => {
-            
-            req.session.email = email;
-            return req.session.save((err) => {
-                console.log(err);
-                console.log("Authenticated");
-                res.status(200).json({ user: { email: email } });
-            });
-        })
-        .catch((err) => console.log(err));
-    // create a session
-    // return a cookie
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        // ✅ Modify session
+        req.session.user = email;
+
+        // ✅ Save session and respond ONLY after success
+        req.session.save((error) => {
+            if (error) {
+                console.error("Session save error:", error);
+                return res.status(500).json({ error: "Session error" });
+            }
+
+            return res.status(200).json({ ok: true, email });
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getCurrentUserController = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    const currentUser = req.session.user;
+    console.log("currentUser", currentUser);
+    if (!currentUser) {
+        return res.status(401).json({ message: "Fetch failed" });
+    }
+    return res.status(200).json({ user: currentUser });
 };
