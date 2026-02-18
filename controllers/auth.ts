@@ -72,7 +72,6 @@ export const getCurrentUserController = (
     next: NextFunction,
 ) => {
     const currentUser = req.session.user;
-    console.log("currentUser", currentUser);
     if (!currentUser) {
         return res.status(401).json({ message: "Fetch failed" });
     }
