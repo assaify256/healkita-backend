@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { User } from "../models/user.ts";
+import  User from "../models/user.ts";
 import bcrypt from "bcryptjs";
 
 export const signUpController = (
