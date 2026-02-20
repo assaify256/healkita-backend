@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import  User from "../models/user.ts";
+import User from "../models/user.ts";
 import bcrypt from "bcryptjs";
 
 export const signUpController = (
@@ -19,7 +19,13 @@ export const signUpController = (
         })
         .then((encryptedPassword) => {
             // create new user that is saved in db
-            return User.create({ email: email, password: encryptedPassword });
+            return User.create({
+                email: email,
+                password: encryptedPassword,
+                userName: email,
+                nickName: "User_no_name",
+                fullName: "User_no_name",
+            });
         })
         .then((user) => {
             // response and log
@@ -38,7 +44,7 @@ export const signInController = async (
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
@@ -77,3 +83,16 @@ export const getCurrentUserController = (
     }
     return res.status(200).json({ user: currentUser });
 };
+
+export const signOutController = (req: Request,
+    res: Response,
+    next: NextFunction,) => {
+        req.session.user = null;
+        req.session.destroy((error) => {
+            if(error){
+                console.log(error);
+                return res.status(500).json({ error: "Sign Out process has error" });
+            }
+            return res.status(200).json({message: "Sign Out"})
+        })
+    }
