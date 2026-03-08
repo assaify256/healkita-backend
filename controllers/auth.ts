@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 import User from "../models/user.ts";
 import bcrypt from "bcryptjs";
 
+
+
 export const signUpController = (
     req: Request,
     res: Response,
@@ -43,7 +45,7 @@ export const signInController = async (
 ) => {
     try {
         const { email, password } = req.body;
-
+        
         const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(401).json({ message: "User not found" });
@@ -55,7 +57,7 @@ export const signInController = async (
         }
 
         // ✅ Modify session
-        req.session.user = email;
+        req.session.email = email;
 
         // ✅ Save session and respond ONLY after success
         req.session.save((error) => {
@@ -77,22 +79,26 @@ export const getCurrentUserController = (
     res: Response,
     next: NextFunction,
 ) => {
-    const currentUser = req.session.user;
+    const currentUser = req.session.email;
     if (!currentUser) {
         return res.status(401).json({ message: "Fetch failed" });
     }
     return res.status(200).json({ user: currentUser });
 };
 
-export const signOutController = (req: Request,
+export const signOutController = (
+    req: Request,
     res: Response,
-    next: NextFunction,) => {
-        req.session.user = null;
-        req.session.destroy((error) => {
-            if(error){
-                console.log(error);
-                return res.status(500).json({ error: "Sign Out process has error" });
-            }
-            return res.status(200).json({message: "Sign Out"})
-        })
-    }
+    next: NextFunction,
+) => {
+    req.session.email = null;
+    req.session.destroy((error) => {
+        if (error) {
+            console.log(error);
+            return res
+                .status(500)
+                .json({ error: "Sign Out process has error" });
+        }
+        return res.status(200).json({ message: "Sign Out" });
+    });
+};

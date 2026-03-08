@@ -4,6 +4,16 @@ import { connectDB, sequelize } from "./db/connect.ts";
 import cors from "cors";
 import session from "express-session";
 import connectSequelize from "connect-session-sequelize";
+import bodyCompositionRouter from "./routes/body-measurement.ts";
+import associate from "./db/association.ts";
+import bodyDataRouter from "./routes/body-data.ts";
+
+declare module "express-session" {
+    interface SessionData {
+        email: string | null;
+    }
+}
+
 
 // Initiate the express package
 const app: Application = express();
@@ -41,13 +51,15 @@ app.use(
 
 //Routes
 app.use("/api/auth", authRouter);
+app.use("/api/body-data", bodyDataRouter);
+app.use("/api/body-composition", bodyCompositionRouter);
 
 // Listen to the server
 
 // Connect to DB
 
 // connectDB()
-//     .then(() => {  
+//     .then(() => {
 //         return sequelize.sync();
 //     }).then(() => {
 //         return store.sync();
@@ -58,24 +70,23 @@ app.use("/api/auth", authRouter);
 //     });
 
 async function startServer() {
-  try {
-    await sequelize.authenticate()
-    console.log("Database connected")
+    try {
+        await sequelize.authenticate();
+        console.log("Database connected");
+        associate();
+        await sequelize.sync();
+        console.log("Models synced");
 
-    await sequelize.sync()
-    console.log("Models synced")
+        await store.sync();
+        console.log("Session table synced");
 
-    await store.sync()
-    console.log("Session table synced")
-
-    app.listen(8080, () => {
-      console.log("Server running on port 8080")
-    })
-
-  } catch (error) {
-    console.error("Startup error:", error)
-    process.exit(1)
-  }
+        app.listen(8080, () => {
+            console.log("Server running on port 8080");
+        });
+    } catch (error) {
+        console.error("Startup error:", error);
+        process.exit(1);
+    }
 }
 
-startServer()
+startServer();
