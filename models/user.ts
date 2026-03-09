@@ -1,15 +1,12 @@
-import { DataTypes, Model, type CreationOptional, type InferAttributes, type InferCreationAttributes } from "sequelize";
+import { DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
 import { sequelize } from "../db/connect.ts";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-    // declare id: CreationOptional<number>;
     declare userName: string;
     declare nickName: string;
     declare email: string;
     declare password: string;
     declare fullName: string;
-    // declare createdAt: CreationOptional<Date>;
-    // declare updatedAt: CreationOptional<Date>;
 }
 
 
