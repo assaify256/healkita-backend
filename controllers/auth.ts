@@ -2,8 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import User from "../models/user.ts";
 import bcrypt from "bcryptjs";
 
-
-
 export const signUpController = (
     req: Request,
     res: Response,
@@ -15,7 +13,13 @@ export const signUpController = (
     //check if any email has already existed
     User.findOne({ where: { email: email } })
         //check existing email, if it is new, next
-        .then(() => {
+        .then((userExists) => {
+            if (userExists) {
+                res.status(401).json({
+                    message:
+                        "User already existed, please login with that account or create new one with different email",
+                });
+            }
             //hash the password
             return bcrypt.hash(password, 12);
         })
@@ -45,7 +49,7 @@ export const signInController = async (
 ) => {
     try {
         const { email, password } = req.body;
-        
+
         const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(401).json({ message: "User not found" });
