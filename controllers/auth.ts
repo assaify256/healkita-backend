@@ -60,10 +60,10 @@ export const signInController = async (
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // ✅ Modify session
+        //  Modify session
         req.session.email = email;
 
-        // ✅ Save session and respond ONLY after success
+        //  Save session and respond ONLY after success
         req.session.save((error) => {
             if (error) {
                 console.error("Session save error:", error);
